@@ -12,6 +12,7 @@ import { Activity } from "./components/Activity";
 import Layout from "./components/Layout";
 import AIGrantLetter from "./components/AIGrantLetter";
 import SupplierList from "./components/Suppliers/Suppliers";
+import MatchMaking from "./components/MatchMaking";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -110,6 +111,9 @@ function App() {
         <Route path="/budget" element={<Activity {...dashboardProps} />} />
         <Route path="/layout" element={<Layout />} />
         <Route path="/grants" element={<AIGrantLetter />} />
+
+        <Route path="/test" element={<Test />} />
+        <Route path="/newtest" element={<MatchMaking />} />
       </Routes>
     </>
   );
