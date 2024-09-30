@@ -15,6 +15,7 @@ import SupplierList from "./components/Suppliers/Suppliers";
 import MatchMaking from "./components/MatchMaking";
 import SupplierDetails from "./components/Suppliers/SupplierDetails";
 import EventPage from "./components/EventDetails";
+import FeedbackRecorder from "./components/FeedbackRecorder";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -109,12 +110,15 @@ function App() {
     <>
       <Routes>
         <Route path="/supplier-list" element={<SupplierList />} />
-        <Route path="/supplier-details/:supplierId" element={<SupplierDetails/>} />
+        <Route
+          path="/supplier-details/:supplierId"
+          element={<SupplierDetails />}
+        />
         <Route path="/events" element={<NGOEventListingPage />} />
         <Route path="/budget" element={<Activity {...dashboardProps} />} />
         <Route path="/layout" element={<Layout />} />
         <Route path="/grants" element={<AIGrantLetter />} />
-
+        <Route path="/record-feedback" element={<FeedbackRecorder />} />
         <Route path="/test" element={<Test />} />
         <Route path="/event-details" element={<EventPage />} />
         <Route path="/newtest" element={<MatchMaking />} />
