@@ -14,6 +14,7 @@ import AIGrantLetter from "./components/AIGrantLetter";
 import SupplierList from "./components/Suppliers/Suppliers";
 import MatchMaking from "./components/MatchMaking";
 import SupplierDetails from "./components/Suppliers/SupplierDetails";
+import EventPage from "./components/EventDetails";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -115,6 +116,7 @@ function App() {
         <Route path="/grants" element={<AIGrantLetter />} />
 
         <Route path="/test" element={<Test />} />
+        <Route path="/event-details" element={<EventPage />} />
         <Route path="/newtest" element={<MatchMaking />} />
       </Routes>
     </>
