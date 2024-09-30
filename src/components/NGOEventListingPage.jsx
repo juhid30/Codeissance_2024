@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaMapMarkerAlt, FaRegClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaRegClock, FaCalendarAlt } from "react-icons/fa";
 import Layout from "./Layout";
+import { Chrono } from "react-chrono";
+
 
 const campaignEvents = [
     {
@@ -407,6 +409,8 @@ const campaignEvents = [
     },
   ];
 
+  const volunteer = ['Jash Rashne' , 'Juhi Deore' , 'Zeeshan Syed Hyder' , ' Om Avhad']
+
 const NGOEventListingPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [viewDetails, setViewDetails] = useState(null); // State for storing the event to view details
@@ -427,6 +431,18 @@ const NGOEventListingPage = () => {
         updatedTasks[index].completed = !updatedTasks[index].completed;
         setTasks(updatedTasks);
 };
+
+const events = [
+  { date: "1984", label: "Registration Started" },
+  { date: "1998", label: "Tasks Listed" },
+  { date: "2001", label: "Volunteers Assigned" },
+  { date: "2007", label: "Event Starts" },
+  { date: "2015", label: "Event Ended" },
+];
+
+const [selectedEvent, setSelectedEvent] = useState(0);
+
+
 
 const [eventList, setEventList] = useState(campaignEvents);
 
@@ -648,41 +664,69 @@ const [editableDetails, setEditableDetails] = useState({
         </motion.div>
 
         <div className="space-y-4">
-          {eventList.reverse().map((event, index) => (
-            <motion.div
-              key={index}
-              className="p-6 bg-white rounded-xl shadow-md flex justify-between items-center transition-all duration-300 hover:shadow-lg hover:bg-gray-100"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: index * 0.1 }}
-            >
-              <div>
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full">
-                    E
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-semibold text-gray-800">{event.name}</h4>
-                    <p className="text-gray-500">{event.organization}</p>
-                  </div>
-                </div>
-                <div className="flex space-x-8 mb-2 text-gray-500 items-center">
-                  <span className="flex items-center gap-1">
-                    <FaMapMarkerAlt className="text-gray-400" /> {event.location.city}
-                  </span>
-                </div>
-                <div className="flex items-center text-sm text-gray-400">
-                  <FaRegClock className="mr-1" /> {event.time.start}
-                </div>
-              </div>
-              <button
-                onClick={() => handleViewDetails(event)}
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-              >
-                View Details
-              </button>
-            </motion.div>
-          ))}
+        {[...eventList].reverse().map((event, index) => (
+  <motion.div
+    key={index}
+    className="p-6 bg-white rounded-xl shadow-md flex justify-between items-start transition-all duration-300 hover:shadow-lg hover:bg-gray-100"
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.3, delay: index * 0.1 }}
+  >
+    <div className="flex-1">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="bg-green-600 text-white w-10 h-10 flex items-center justify-center rounded-full">
+          E
+        </div>
+        <div>
+          <h4 className="text-xl font-semibold text-gray-800">{event.name}</h4>
+          <p className="text-gray-500">{event.organization}</p>
+        </div>
+      </div>
+      {/* Combined row for city, start time, end time, and date */}
+      <div className="flex items-center justify-between text-gray-500 mb-2">
+        <span className="flex items-center gap-1">
+          <FaMapMarkerAlt className="text-gray-400" /> {event.location.city}
+        </span>
+        <span className="flex items-center gap-1">
+          <FaRegClock className="mr-1" /> {event.time.start} - {event.time.end}
+        </span>
+        <span className="flex items-center gap-1">
+          <FaCalendarAlt className="mr-1" /> {new Date(event.date).toLocaleDateString()}
+        </span>
+      </div>
+      {/* Displaying tags from additionalDetails */}
+      <div className="mt-2 flex flex-wrap gap-2">
+        {event.additionalDetails && (
+          <>
+            {event.additionalDetails.type && (
+              <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {event.additionalDetails.type}
+              </span>
+            )}
+            {event.additionalDetails.targetAudience && (
+              <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {event.additionalDetails.targetAudience}
+              </span>
+            )}
+            {event.additionalDetails.fees && (
+              <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                {event.additionalDetails.fees}
+              </span>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+    <button
+      onClick={() => handleViewDetails(event)}
+      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+    >
+      View Details
+    </button>
+  </motion.div>
+))}
+
+
         </div>
       </section>
 
@@ -914,168 +958,283 @@ const [editableDetails, setEditableDetails] = useState({
 
             {/* View Event Details Modal */}
             {viewDetails && (
-    <motion.div
+      <motion.div
         className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-    >
+      >
         <motion.div
-            className="bg-white h-[90vh] rounded-lg p-6 w-full max-w-2xl overflow-auto shadow-lg"
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.3 }}
+          className="bg-white h-[90vh] rounded-lg p-6 w-full max-w-2xl overflow-auto shadow-lg"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3 }}
         >
-            {/* Event Image */}
-            <img
-                src={viewDetails.image}
-                alt={viewDetails.name}
-                className="w-full h-48 object-cover rounded-lg mb-4 shadow-md"
-            />
+          {/* Event Image */}
+          <img
+            src={viewDetails.image}
+            alt={viewDetails.name}
+            className="w-full h-48 object-cover rounded-lg mb-4 shadow-md"
+          />
 
-            {/* Event Name */}
-            <h2 className="text-2xl font-semibold mb-2">{viewDetails.name}</h2>
+          {/* Event Name */}
+          <h2 className="text-2xl font-semibold mb-2">{viewDetails.name}</h2>
 
-            {/* Event Description */}
-            <p className="text-gray-700 mb-4">{viewDetails.description}</p>
+          {/* Event Description */}
+          <p className="text-gray-700 mb-4">{viewDetails.description}</p>
 
-            {/* Editable Event Details Section */}
-            <div className="space-y-2 mb-4">
-                <div className="flex space-x-4">
-                    <div className="flex-1">
-                        <label className="text-gray-700">Date</label>
-                        <input
-                            type="text"
-                            value={editableDetails.date}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, date: e.target.value })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <label className="text-gray-700">Start Time</label>
-                        <input
-                            type="text"
-                            value={editableDetails.time.start}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, time: { ...editableDetails.time, start: e.target.value } })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <label className="text-gray-700">End Time</label>
-                        <input
-                            type="text"
-                            value={editableDetails.time.end}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, time: { ...editableDetails.time, end: e.target.value } })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                </div>
+          {/* Timeline Section */}
+          <div className="mt-6">
+      <h3 className="text-lg font-semibold mb-4">Event Timeline</h3>
 
-                <div className="flex space-x-4 mb-4">
-                    <div className="flex-1">
-                        <label className="text-gray-700">Location</label>
-                        <input
-                            type="text"
-                            value={editableDetails.location.address}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, location: { ...editableDetails.location, address: e.target.value } })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <label className="text-gray-700">Organizer</label>
-                        <input
-                            type="text"
-                            value={editableDetails.organizer}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, organizer: e.target.value })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                </div>
+      {/* Timeline Container */}
+      <div className="flex justify-between items-center w-full">
+        {events.map((event, index) => (
+          <div key={index} className="flex flex-col items-center">
+            {/* Animated Circle */}
+            <motion.div
+              className={`w-6 h-6 rounded-full ${
+                selectedEvent === index ? "bg-green-500" : "bg-gray-300"
+              } flex items-center justify-center cursor-pointer`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSelectedEvent(index)}
+              transition={{ duration: 0.3 }}
+            >
+              <motion.span
+                className={`block w-2 h-2 rounded-full ${
+                  selectedEvent === index ? "bg-white" : "bg-transparent"
+                }`}
+              />
+            </motion.div>
 
-                <div className="flex space-x-4">
-                    <div className="flex-1">
-                        <label className="text-gray-700">Contact Email</label>
-                        <input
-                            type="text"
-                            value={editableDetails.contactEmail}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, contactEmail: e.target.value })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <label className="text-gray-700">Registration Link</label>
-                        <input
-                            type="text"
-                            value={editableDetails.registrationLink}
-                            onChange={(e) => setEditableDetails({ ...editableDetails, registrationLink: e.target.value })}
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                        />
-                    </div>
-                </div>
+            {/* Event Label */}
+            <p className="mt-2 text-sm text-center">{event.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Progress Bar */}
+      <div className="flex justify-between mt-4 items-center w-full">
+        {events.map((_, index) => (
+          <motion.div
+            key={index}
+            className={`h-1 flex-1 mx-1 rounded-full ${
+              selectedEvent >= index ? "bg-green-500" : "bg-gray-300"
+            }`}
+            initial={{ width: 0 }}
+            animate={{ width: selectedEvent >= index ? "100%" : "0%" }}
+            transition={{ duration: 0.5, delay: index * 0.2 }}
+          />
+        ))}
+      </div>
+          </div>
+
+          {/* Editable Event Details Section */}
+          <div className="space-y-2 mb-4 mt-4">
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <label className="text-gray-700">Date</label>
+                <input
+                  type="text"
+                  value={editableDetails.date}
+                  onChange={(e) =>
+                    setEditableDetails({ ...editableDetails, date: e.target.value })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-gray-700">Start Time</label>
+                <input
+                  type="text"
+                  value={editableDetails.time.start}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      time: { ...editableDetails.time, start: e.target.value },
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-gray-700">End Time</label>
+                <input
+                  type="text"
+                  value={editableDetails.time.end}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      time: { ...editableDetails.time, end: e.target.value },
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
             </div>
 
-            {/* Task Management Section */}
-            <div className="mt-4">
-                <h3 className="text-lg font-semibold mb-2">Tasks</h3>
-                <div className="flex space-x-2 mb-4">
-                    <input
-                        type="text"
-                        placeholder="Add a new task"
-                        className="flex-grow border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-shadow shadow-sm"
-                        value={newTask}
-                        onChange={(e) => setNewTask(e.target.value)}
-                    />
-                    <button
-                        onClick={handleAddTask}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow"
-                    >
-                        Add Task
-                    </button>
-                </div>
-
-                <ul className="space-y-2">
-                    {tasks.map((task, index) => (
-                        <li key={index} className="flex items-center justify-between bg-gray-100 p-2 rounded-lg shadow-sm">
-                            <span className={`flex-grow ${task.completed ? 'line-through text-gray-400' : 'text-gray-800'}`}>
-                                {task.name}
-                            </span>
-                            <button
-                                onClick={() => toggleTaskCompletion(index)} // This now only toggles the task completion
-                                className={`ml-4 px-4 py-1 rounded-lg ${task.completed ? 'bg-gray-300 text-gray-700' : 'bg-green-600 text-white'} hover:${task.completed ? 'bg-gray-400' : 'bg-green-700'} transition`}
-                            >
-                                {task.completed ? 'Unmark Important' : 'Mark Important'}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+            <div className="flex space-x-4 mb-4">
+              <div className="flex-1">
+                <label className="text-gray-700">Location</label>
+                <input
+                  type="text"
+                  value={editableDetails.location.address}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      location: { ...editableDetails.location, address: e.target.value },
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-gray-700">Organizer</label>
+                <input
+                  type="text"
+                  value={editableDetails.organizer}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      organizer: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
             </div>
 
-            {/* Save Changes Button */}
-            <div className="mt-4 flex justify-between">
-                <button
-                    onClick={() => setViewDetails(null)}
-                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <label className="text-gray-700">Contact Email</label>
+                <input
+                  type="text"
+                  value={editableDetails.contactEmail}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      contactEmail: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="text-gray-700">Registration Link</label>
+                <input
+                  type="text"
+                  value={editableDetails.registrationLink}
+                  onChange={(e) =>
+                    setEditableDetails({
+                      ...editableDetails,
+                      registrationLink: e.target.value,
+                    })
+                  }
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Volunteer Section */}
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">Tasks</h3>
+            <div className="flex space-x-2 mb-4">
+              <input
+                type="text"
+                placeholder="Add a new task"
+                className="flex-grow border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-shadow shadow-sm"
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
+              />
+              <button
+                onClick={handleAddTask}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow"
+              >
+                Add Task
+              </button>
+            </div>
+
+            {/* Task List */}
+            <div className="space-y-2 max-h-28 overflow-y-auto">
+              {tasks.map((task, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between bg-gray-100 p-2 rounded-lg shadow-sm"
                 >
-                    Cancel
-                </button>
-                <div>
-                    <button
-                        // onClick={handleSaveChanges}
-                        className="px-4 py-2 mr-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                    >
-                        Get Resources
-                    </button>
-                    <button
-                        onClick={handleSaveChanges}
-                        className="px-4 py-2 ml-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-                    >
-                        Save Changes
-                    </button>
-                </div>
+                  <span
+                    className={`flex-grow ${
+                      task.completed ? "line-through text-gray-400" : "text-gray-800"
+                    }`}
+                  >
+                    {task.name}
+                  </span>
+                  <button
+                    onClick={() => toggleTaskCompletion(index)}
+                    className={`ml-4 px-4 py-1 rounded-lg ${
+                      task.completed
+                        ? "bg-gray-300 text-gray-700"
+                        : "bg-green-600 text-white"
+                    } hover:${
+                      task.completed ? "bg-gray-400" : "bg-green-700"
+                    } transition`}
+                  >
+                    {task.completed ? "Unmark Important" : "Mark Important"}
+                  </button>
+                </li>
+              ))}
             </div>
+          </div>
+
+          <div className="mt-4">
+            <h3 className="text-lg font-semibold mb-2">Volunteers Assigned</h3>
+            
+
+            {/* Volunteer List */}
+            <div className="space-y-2 max-h-28 overflow-y-auto">
+              {volunteer.map((name, index) => (
+                <li
+                  key={index}
+                  className="flex items-center justify-between bg-gray-100 p-2 rounded-lg shadow-sm"
+                >
+                  <span
+                    className={`flex-grow`}
+                  >
+                    {name}
+                  </span>
+                  
+                </li>
+              ))}
+            </div>
+          </div>
+
+          {/* Save Changes Button */}
+          <div className="mt-4 flex justify-between">
+            <button
+              onClick={() => setViewDetails(null)}
+              className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
+            >
+              Cancel
+            </button>
+            <div>
+              <button
+                className="px-4 py-2 mr-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Get Resources
+              </button>
+              <button
+                onClick={handleSaveChanges}
+                className="px-4 py-2 ml-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
         </motion.div>
-    </motion.div>
-)}
+      </motion.div>
+    )}
+
 
 
 
