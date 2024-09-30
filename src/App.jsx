@@ -13,6 +13,7 @@ import Layout from "./components/Layout";
 import AIGrantLetter from "./components/AIGrantLetter";
 import SupplierList from "./components/Suppliers/Suppliers";
 import MatchMaking from "./components/MatchMaking";
+import SupplierDetails from "./components/Suppliers/SupplierDetails";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -107,6 +108,7 @@ function App() {
     <>
       <Routes>
         <Route path="/supplier-list" element={<SupplierList />} />
+        <Route path="/supplier-details/:supplierId" element={<SupplierDetails/>} />
         <Route path="/events" element={<NGOEventListingPage />} />
         <Route path="/budget" element={<Activity {...dashboardProps} />} />
         <Route path="/layout" element={<Layout />} />

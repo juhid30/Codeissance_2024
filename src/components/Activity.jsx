@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useEffect, useRef } from 'react';
+import { Chart, registerables } from 'chart.js';
 import { AddMoney } from "./AddMoney";
 import { AddPaycheck } from "./AddPaycheck";
 import { Bar, Line } from "react-chartjs-2";
@@ -7,6 +9,8 @@ import money from "../assets/money.png";
 import tickets from "../assets/tickets.png";
 import books from "../assets/books.png";
 import Layout from "./Layout";
+
+Chart.register(...registerables);
 
 export const Activity = (props) => {
   const {
@@ -21,6 +25,20 @@ export const Activity = (props) => {
     paycheckAmt,
     setPaycheckAmt,
   } = props;
+
+  const chartRef = useRef(null);
+
+  useEffect(() => {
+      const chartInstance = chartRef.current;
+
+      return () => {
+          if (chartInstance) {
+              chartInstance.destroy();
+          }
+      };
+  }, []);
+
+  
 
   return (
     <div>
@@ -94,7 +112,7 @@ export const Activity = (props) => {
                 </div>
               </div>
 
-              {/* Bar Chart */}
+              {/* Line Chart */}
               <div className="h-[75%] border border-[#e7e7e7] m-[1%] pt-[50px] p-[2%] rounded-[30px]">
                 <Line
                   data={{
