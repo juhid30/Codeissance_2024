@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
-import Cart from "./Cart"; // Import the Cart component
+import { useNavigate } from "react-router-dom"; 
+import Cart from "./Cart"; 
 import { db } from "../../../firebase";
 import { collection, getDocs } from "firebase/firestore";
+import Layout from '../Layout';
+import { motion } from "framer-motion";
 
 const SupplierList = () => {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
@@ -10,11 +12,13 @@ const SupplierList = () => {
   const [cart, setCart] = useState([]);
   const [cartVisible, setCartVisible] = useState(false);
   const [products, setProducts] = useState([]);
-  const [suppliers, setSuppliers] = useState([]); // State to hold supplier list
+  const [suppliers, setSuppliers] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [randomText, setRandomText] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const navigate = useNavigate(); // Initialize useNavigate for navigation
+  const navigate = useNavigate(); 
 
-  // Fetch products from Firestore
   useEffect(() => {
     const fetchProducts = async () => {
       const productsCollection = collection(db, "Products");
@@ -34,7 +38,6 @@ const SupplierList = () => {
     fetchProducts();
   }, []);
 
-  // Fetch suppliers from Firestore
   useEffect(() => {
     const fetchSuppliers = async () => {
       const suppliersCollection = collection(db, "Suppliers");
@@ -43,7 +46,7 @@ const SupplierList = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      setSuppliers(supplierList); // Store suppliers in state
+      setSuppliers(supplierList);
     };
 
     fetchSuppliers();
@@ -54,7 +57,9 @@ const SupplierList = () => {
       const selectedProducts = products.filter((p) =>
         selectedProductIds.includes(p.id)
       );
-      console.log("Comparing products:", selectedProducts);
+      setSelectedProduct(selectedProducts[Math.floor(Math.random() * 2)]);
+      setRandomText("This is a randomly generated comparison text.");
+      setModalVisible(true);
     } else {
       alert("Please select exactly 2 products to compare.");
     }
@@ -96,109 +101,149 @@ const SupplierList = () => {
     setCartVisible(!cartVisible);
   };
 
-  console.log(displayedProducts);
+  const closeModal = () => {
+    setModalVisible(false);
+    setRandomText("");
+    setSelectedProduct(null);
+    setSelectedProductIds([]);
+  };
 
   return (
-    <div className="w-full h-screen bg-gray-50 p-6">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl font-extrabold text-green-600">
-          Supplier Product Analysis
-        </h1>
-        <input
-          type="text"
-          className="border-2 border-gray-300 rounded-md p-3 w-full max-w-md text-gray-700 focus:outline-none focus:border-green-500 transition duration-200"
-          placeholder="Search products..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <button
-          onClick={handleCompare}
-          className="ml-4 bg-green-600 hover:bg-green-700 text-white p-3 px-6 rounded-full shadow-lg transition-all duration-300"
-        >
-          Compare
-        </button>
-      </div>
-
-      <div className="h-[85%] invisible-scrollbar overflow-auto bg-slate-800">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto scrollbar-hide smooth-scroll">
-          {displayedProducts.length > 0 ? (
-            displayedProducts.map((product) => (
-              <div
-                key={product.id}
-                className={`bg-white shadow-md hover:shadow-lg transition-shadow duration-300 border-2 p-6 rounded-lg cursor-pointer transform ${
-                  selectedProductIds.includes(product.id)
-                    ? "border-gray-200 bg-green-100 scale-100"
-                    : "border-gray-200"
-                }`}
-                onClick={() => toggleProductSelection(product.id)}
-              >
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedProductIds.includes(product.id)}
-                    onChange={() => toggleProductSelection(product.id)}
-                    className="mr-4"
-                  />
-                  <h2 className="text-2xl font-semibold text-gray-800">
-                    {product.name}
-                  </h2>
-                </div>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Supplier ID:</span>{" "}
-                  {product.supplier_id}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Cost:</span> ₹{product.cost}
-                </p>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Available:</span>{" "}
-                  {product.quantity_available}
-                </p>
-                <button
-                  className="mt-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    addToCart(product);
-                  }}
-                >
-                  Add to Cart
-                </button>
-                <button
-                  className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const supplier = suppliers.find(
-                      (sup) => sup.id === product.supplier_id
-                    );
-                    if (supplier) {
-                      navigate(`/supplier-details/${supplier.id}`, {
-                        state: { supplier }, // Pass supplier as state
-                      });
-                    } else {
-                      alert("Supplier not found.");
-                    }
-                  }}
-                >
-                  View Supplier Details
-                </button>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-600 text-xl font-semibold col-span-3 text-center">
-              No products found for the searched term.
-            </p>
-          )}
+    <Layout>
+      <div className="w-full h-[90vh] bg-gray-50 p-6">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-4xl font-extrabold text-green-600">
+            Supplier Product Analysis
+          </h1>
+          <input
+            type="text"
+            className="border-2 border-gray-300 rounded-md p-3 w-full max-w-md text-gray-700 focus:outline-none focus:border-green-500 transition duration-200"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button
+            onClick={handleCompare}
+            className="ml-4 bg-green-600 hover:bg-green-700 text-white p-3 px-6 rounded-full shadow-lg transition-all duration-300"
+          >
+            Compare
+          </button>
         </div>
-      </div>
 
-      <div className="fixed bottom-5 right-5 bg-green-600 p-4 rounded-full shadow-lg transition-all duration-300 hover:bg-green-700">
-        <span className="text-white font-bold" onClick={toggleCart}>
-          {cart.length}
-        </span>
-      </div>
+        <div className="h-[85%] invisible-scrollbar overflow-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto scrollbar-hide smooth-scroll">
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product) => (
+                <motion.div
+                  key={product.id}
+                  className={`bg-white shadow-md hover:shadow-lg transition-shadow duration-300 border-2 p-6 rounded-lg cursor-pointer transform ${
+                    selectedProductIds.includes(product.id)
+                      ? "border-green-500 bg-green-100" 
+                      : "border-gray-200"
+                  }`}
+                  onClick={() => toggleProductSelection(product.id)}
+                  layout 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <div className="flex items-center mb-4">
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 mr-4 ${
+                        selectedProductIds.includes(product.id)
+                          ? "border-green-500 bg-green-500"
+                          : "border-gray-400 bg-white"
+                      }`}
+                    />
+                    <h2 className="text-2xl font-semibold text-gray-800">
+                      {product.name}
+                    </h2>
+                  </div>
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Supplier ID:</span> {product.supplier_id}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Cost:</span> ₹{product.cost}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Available:</span> {product.quantity_available}
+                  </p>
+                  <button
+                    className="mt-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300 ml-3"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const supplier = suppliers.find(
+                        (sup) => sup.id === product.supplier_id
+                      );
+                      if (supplier) {
+                        navigate(`/supplier-details/${supplier.id}`, {
+                          state: { supplier },
+                        });
+                      } else {
+                        alert("Supplier not found.");
+                      }
+                    }}
+                  >
+                    View Supplier Details
+                  </button>
+                </motion.div>
+              ))
+            ) : (
+              <p className="text-gray-600 text-xl font-semibold col-span-3 text-center">
+                No products found for the searched term.
+              </p>
+            )}
+          </div>
+        </div>
 
-      {cartVisible && <Cart cart={cart} onClose={toggleCart} />}
-    </div>
+        <div className="fixed bottom-5 right-5 bg-green-600 p-4 rounded-full shadow-lg transition-all duration-300 hover:bg-green-700">
+          <span className="text-white font-bold" onClick={toggleCart}>
+            {cart.length}
+          </span>
+        </div>
+
+        {cartVisible && <Cart cart={cart} onClose={toggleCart} />}
+
+        {modalVisible && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-60">
+            <div className="bg-white p-8 rounded-lg shadow-lg w-1/3 max-w-sm">
+              <h2 className="text-3xl font-semibold mb-4">Comparison Result</h2>
+              <p className="text-gray-700 mb-4">{randomText}</p>
+              {selectedProduct && (
+                <div className="border-t border-gray-200 pt-4 mt-4">
+                  <h3 className="text-lg font-medium mb-2">Selected Product:</h3>
+                  <div className="bg-gray-100 p-4 rounded-lg shadow-sm">
+                    <h4 className="text-xl font-bold mb-1">{selectedProduct.name}</h4>
+                    <p className="text-gray-600 text-lg">Cost: <span className="font-semibold text-green-600">₹{selectedProduct.cost}</span></p>
+                  </div>
+                  <button
+                    className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-300"
+                    onClick={() => addToCart(selectedProduct)}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              )}
+              <button
+                className="mt-4 w-full bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg transition duration-300"
+                onClick={closeModal}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </Layout>
   );
 };
 

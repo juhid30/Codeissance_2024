@@ -174,43 +174,67 @@ const EventPage = () => {
 
           {/* Right Column */}
           <div className="w-1/3 space-y-8 ">
-            {/* RSVP Donut Chart */}
-            <div className="flex justify-center items-center flex-col">
-              <span className='font-semibold my-2'>Attendance</span>
-              <div className="w-40 h-40">
-                <Doughnut data={rsvpData} options={{ maintainAspectRatio: false }} />
-              </div>
-              <p className="text-sm text-gray-600 mt-2">780 Present</p>
-            </div>
+  {/* Flex container for the donut charts */}
+  <div className="flex justify-between">
+    {/* RSVP Donut Chart */}
+    <div className="flex justify-center items-center flex-col">
+      <span className='font-semibold my-2'>Attendance</span>
+      <div className="w-40 h-40">
+        <Doughnut data={rsvpData} options={{ maintainAspectRatio: false }} />
+      </div>
+      <p className="text-sm text-gray-600 mt-2">780 Present</p>
+    </div>
 
-            {/* Line Graph */}
-            <div>
-              <h2 className="text-xl font-bold mb-2 text-green-700">Attendance Analysis (Last 7 Days)</h2>
-              <Line data={lineData} />
-            </div>
+    {/* User Feedback Analysis Donut Chart */}
+    <div className="flex justify-center items-center flex-col">
+      <span className='font-semibold my-2'>User Feedback Analysis</span>
+      <div className="w-40 h-40">
+        <Doughnut 
+          data={{
+            labels: ['Positive', 'Neutral', 'Negative'],
+            datasets: [{
+              data: [300, 150, 50], // Random numbers for feedback
+              backgroundColor: ['#4CAF50', '#FFC107', '#F44336'], // Colors for each segment
+              hoverBackgroundColor: ['#45A049', '#E0A800', '#E53935'],
+            }]
+          }} 
+          options={{ maintainAspectRatio: false }} 
+        />
+      </div>
+      <p className="text-xs text-gray-600 mt-2">300 Positive, 150 Neutral, 50 Negative</p>
+    </div>
+  </div>
 
-            {/* Fundraising Progress */}
-            <div>
-              <h2 className="text-xl font-bold mb-2 text-green-700">Fundraise Progress</h2>
-              <div className="bg-gray-300 rounded-full h-4 w-full">
-                <motion.div
-                  className="bg-green-500 h-4 rounded-full"
-                  initial={{ width: '0%' }}
-                  animate={{ width: '60%' }}
-                  transition={{ duration: 1 }}
-                />
-              </div>
-              <p className="text-sm mt-2">$23,763 / $40,000</p>
-            </div>
+  {/* Line Graph */}
+  <div>
+    <h2 className="text-xl font-bold mb-2 text-green-700">Attendance Analysis (Last 7 Days)</h2>
+    <Line data={lineData} />
+  </div>
 
-            {/* Location */}
-            <div className="bg-gray-100 p-4 rounded-lg">
-              <h2 className="text-xl font-bold mb-2 text-green-700">Location & Time</h2>
-              <p>{data.location.address}</p>
-              <p>{data.location.city}, {data.location.state}, {data.location.country}</p>
-              <p className="mt-2">Starts at: {data.time.start}</p>
-            </div>
+  {/* Fundraising Progress */}
+  <div>
+    <h2 className="text-xl font-bold mb-2 text-green-700">Fundraise Progress</h2>
+    <div className="bg-gray-300 rounded-full h-4 w-full">
+      <motion.div
+        className="bg-green-500 h-4 rounded-full"
+        initial={{ width: '0%' }}
+        animate={{ width: '60%' }}
+        transition={{ duration: 1 }}
+      />
+    </div>
+    <p className="text-sm mt-2">$23,763 / $40,000</p>
+  </div>
+
+  {/* Location */}
+  <div className="bg-gray-100 p-4 rounded-lg">
+    <h2 className="text-xl font-bold mb-2 text-green-700">Location & Time</h2>
+    <p>{data.location.address}</p>
+    <p>{data.location.city}, {data.location.state}, {data.location.country}</p>
+    <p className="mt-2">Starts at: {data.time.start}</p>
+  </div>
           </div>
+
+
         </div>
       </div>
     </Layout>
