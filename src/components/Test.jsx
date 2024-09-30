@@ -1,6 +1,7 @@
 import { collection, doc, setDoc } from "firebase/firestore";
 import React from "react";
 import { db } from "../../firebase";
+import { uploadProducts, uploadSuppliers } from "../../utils";
 
 const Test = () => {
   const uploadCampaigns = async () => {
@@ -218,7 +219,7 @@ const Test = () => {
     <>
       <div>
         <h1>Test Component</h1>
-        <button onClick={uploadCampaigns}>Add to Firebase</button>
+        <button onClick={uploadProducts}>Add to Firebase</button>
       </div>
     </>
   );

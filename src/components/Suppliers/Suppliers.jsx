@@ -1,96 +1,111 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import Cart from "./Cart"; // Import the Cart component
+import { db } from "../../../firebase";
+import { collection, getDocs } from "firebase/firestore";
 
 const SupplierList = () => {
-  const [selectedSuppliers, setSelectedSuppliers] = useState([]);
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState([]);
+  const [cartVisible, setCartVisible] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [suppliers, setSuppliers] = useState([]); // State to hold supplier list
 
-  // Define supplier list with additional items
-  const suppliers = [
-    {
-      id: 1,
-      name: "Supplier A",
-      location: "Mumbai",
-      cost: 15000,
-      items: ["Food Boxes", "Stationery Kits"],
-    },
-    {
-      id: 2,
-      name: "Supplier B",
-      location: "Delhi",
-      cost: 12000,
-      items: ["Hygiene Kits", "Paper Bags"],
-    },
-    {
-      id: 3,
-      name: "Supplier C",
-      location: "Kolkata",
-      cost: 18000,
-      items: ["First Aid Kits", "Infant Formula", "Blankets"],
-    },
-    {
-      id: 4,
-      name: "Supplier D",
-      location: "Pune",
-      cost: 13000,
-      items: ["Toys and Games for Children", "Backpacks"],
-    },
-    {
-      id: 5,
-      name: "Supplier E",
-      location: "Chennai",
-      cost: 14000,
-      items: ["Canned Goods", "Blankets", "Paper Bags"],
-    },
-  ];
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
+
+  // Fetch products from Firestore
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const productsCollection = collection(db, "Products");
+      const productSnapshot = await getDocs(productsCollection);
+      const productList = productSnapshot.docs.map((doc) => ({
+        id: doc.data().id,
+        name: doc.data().name,
+        cost: doc.data().cost,
+        description: doc.data().description,
+        image_url: doc.data().image_url,
+        quantity_available: doc.data().quantity_available,
+        supplier_id: doc.data().supplier_id,
+      }));
+      setProducts(productList);
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Fetch suppliers from Firestore
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const suppliersCollection = collection(db, "Suppliers");
+      const supplierSnapshot = await getDocs(suppliersCollection);
+      const supplierList = supplierSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setSuppliers(supplierList); // Store suppliers in state
+    };
+
+    fetchSuppliers();
+  }, []);
 
   const handleCompare = () => {
-    if (selectedSuppliers.length === 2) {
-      console.log("Comparing suppliers:", selectedSuppliers);
+    if (selectedProductIds.length === 2) {
+      const selectedProducts = products.filter((p) =>
+        selectedProductIds.includes(p.id)
+      );
+      console.log("Comparing products:", selectedProducts);
     } else {
-      alert("Please select exactly 2 suppliers to compare.");
+      alert("Please select exactly 2 products to compare.");
     }
   };
 
-  const toggleSupplierSelection = (supplier) => {
-    if (selectedSuppliers.includes(supplier)) {
-      // Deselecting supplier
-      setSelectedSuppliers(selectedSuppliers.filter((s) => s !== supplier));
-    } else if (selectedSuppliers.length < 2) {
-      // Selecting supplier if less than 2 are selected
-      setSelectedSuppliers([...selectedSuppliers, supplier]);
+  const toggleProductSelection = (productId) => {
+    if (selectedProductIds.includes(productId)) {
+      setSelectedProductIds(
+        selectedProductIds.filter((id) => id !== productId)
+      );
+    } else if (selectedProductIds.length < 2) {
+      setSelectedProductIds([...selectedProductIds, productId]);
     }
   };
 
-  // Filter suppliers based on search term
-  const filteredSuppliers = suppliers.filter((supplier) => {
+  const filteredProducts = products.filter((product) => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      supplier.name.toLowerCase().includes(searchLower) ||
-      supplier.items.some((item) => item.toLowerCase().includes(searchLower))
+      product.name.toLowerCase().includes(searchLower) ||
+      product.description.toLowerCase().includes(searchLower)
     );
   });
 
-  const addToCart = (supplier) => {
+  const displayedProducts =
+    filteredProducts.length > 0
+      ? filteredProducts
+      : products.filter((product) => selectedProductIds.includes(product.id));
+
+  const addToCart = (product) => {
     setCart((prevCart) => {
-      if (!prevCart.includes(supplier)) {
-        return [...prevCart, supplier];
+      if (!prevCart.includes(product)) {
+        return [...prevCart, product];
       }
       return prevCart;
     });
   };
 
+  const toggleCart = () => {
+    setCartVisible(!cartVisible);
+  };
+
   return (
     <div className="w-full h-screen bg-gray-50 p-6">
-      {/* Header section with title, search input, and compare button */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl font-extrabold text-green-600">
-          Supplier Cost Analysis
+          Supplier Product Analysis
         </h1>
         <input
           type="text"
           className="border-2 border-gray-300 rounded-md p-3 w-full max-w-md text-gray-700 focus:outline-none focus:border-green-500 transition duration-200"
-          placeholder="Search suppliers or items..."
+          placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -102,76 +117,65 @@ const SupplierList = () => {
         </button>
       </div>
 
-      {/* Supplier List Section with smooth scroll */}
       <div className="h-[85%] invisible-scrollbar overflow-auto bg-slate-800">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-y-auto scrollbar-hide smooth-scroll">
-          {filteredSuppliers.length > 0 ? (
-            filteredSuppliers.map((supplier) => (
+          {displayedProducts.length > 0 ? (
+            displayedProducts.map((product) => (
               <div
-                key={supplier.id}
+                key={product.id}
                 className={`bg-white shadow-md hover:shadow-lg transition-shadow duration-300 border-2 p-6 rounded-lg cursor-pointer transform ${
-                  selectedSuppliers.includes(supplier)
-                    ? "border-green-500 bg-green-50 scale-105" // Change the background color when selected
+                  selectedProductIds.includes(product.id)
+                    ? "border-gray-200 bg-green-100 scale-100"
                     : "border-gray-200"
                 }`}
-                onClick={() => {
-                  if (
-                    selectedSuppliers.length < 2 ||
-                    selectedSuppliers.includes(supplier)
-                  ) {
-                    toggleSupplierSelection(supplier);
-                    console.log("HIII");
-                  }
-                }}
+                onClick={() => toggleProductSelection(product.id)}
               >
-                <div className="flex items-center mb-4">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent triggering the card click
-                      toggleSupplierSelection(supplier);
-                    }}
-                    className={`bg-green-500 rounded-full h-12 w-12 flex items-center justify-center border-2 ${
-                      selectedSuppliers.includes(supplier)
-                        ? "border-green-700"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {selectedSuppliers.includes(supplier) ? (
-                      <span className="text-white text-xl bg-red-900 font-bold">
-                        ✔
-                      </span>
-                    ) : (
-                      <span className="text-white text-xl font-bold">
-                        {supplier.name[0]}
-                      </span>
-                    )}
-                  </button>
-                  <h2 className="ml-4 text-2xl font-semibold text-gray-800">
-                    {supplier.name}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedProductIds.includes(product.id)}
+                    onChange={() => toggleProductSelection(product.id)}
+                    className="mr-4"
+                  />
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    {product.name}
                   </h2>
                 </div>
                 <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Location:</span>{" "}
-                  {supplier.location}
+                  <span className="font-semibold">Supplier ID:</span>{" "}
+                  {product.supplier_id}
                 </p>
                 <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Cost:</span> ₹{supplier.cost}
+                  <span className="font-semibold">Cost:</span> ₹{product.cost}
                 </p>
                 <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Items:</span>{" "}
-                  {supplier.items.join(", ")}
+                  <span className="font-semibold">Available:</span>{" "}
+                  {product.quantity_available}
                 </p>
                 <button
                   className="mt-4 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
-                  onClick={() => addToCart(supplier)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(product);
+                  }}
                 >
                   Add to Cart
                 </button>
                 <button
                   className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
-                  onClick={() =>
-                    console.log(`View details of ${supplier.name}`)
-                  }
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const supplier = suppliers.find(
+                      (sup) => sup.id === product.supplier_id
+                    );
+                    if (supplier) {
+                      navigate(`/supplier-details/${supplier.id}`, {
+                        state: { supplier }, // Pass supplier as state
+                      });
+                    } else {
+                      alert("Supplier not found.");
+                    }
+                  }}
                 >
                   View Supplier Details
                 </button>
@@ -179,16 +183,19 @@ const SupplierList = () => {
             ))
           ) : (
             <p className="text-gray-600 text-xl font-semibold col-span-3 text-center">
-              No suppliers found for the searched item.
+              No products found for the searched term.
             </p>
           )}
         </div>
       </div>
 
-      {/* Cart Icon */}
       <div className="fixed bottom-5 right-5 bg-green-600 p-4 rounded-full shadow-lg transition-all duration-300 hover:bg-green-700">
-        <span className="text-white font-bold">{cart.length}</span>
+        <span className="text-white font-bold" onClick={toggleCart}>
+          {cart.length}
+        </span>
       </div>
+
+      {cartVisible && <Cart cart={cart} onClose={toggleCart} />}
     </div>
   );
 };
