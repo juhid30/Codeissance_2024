@@ -1088,6 +1088,6 @@ const [editableDetails, setEditableDetails] = useState({
 
             </div>
         );
-        };
+};
 
 export default NGOEventListingPage;

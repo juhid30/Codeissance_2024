@@ -42,7 +42,7 @@ export const AddMoney = ({expenseArr , setExpenseArray , handleArray , handleIsE
                     <option value={"DefaultOption"}>Select Option</option>
                     <option value={"food"}>FOOD & BEVERAGES</option>
                     <option value={"bills"}>BILLS & PAYMENTS</option>
-                    <option value={"entertainment"}>ENTERTAINMENT</option>
+                    <option value={"entertainment"}>LOGISTICS</option>
                     <option value={"misc"}>MISCELLANEOUS</option>
                   </select>      
               </div> 
