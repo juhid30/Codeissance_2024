@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 import Cart from "./Cart"; // Import the Cart component
-import SupplierDetails from "./SupplierDetails"; // Import the SupplierDetails component
 import { db } from "../../../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
@@ -8,10 +8,11 @@ const SupplierList = () => {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [cart, setCart] = useState([]);
-  const [cartVisible, setCartVisible] = useState(false); // State to manage cart visibility
-  const [products, setProducts] = useState([]); // State to hold products
-  const [supplierDetails, setSupplierDetails] = useState(null); // State to hold supplier details
-  const [supplierDetailsVisible, setSupplierDetailsVisible] = useState(false); // State to manage supplier details visibility
+  const [cartVisible, setCartVisible] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [suppliers, setSuppliers] = useState([]); // State to hold supplier list
+
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
 
   // Fetch products from Firestore
   useEffect(() => {
@@ -33,44 +34,20 @@ const SupplierList = () => {
     fetchProducts();
   }, []);
 
-  // Fetch supplier details based on supplier ID
-  const fetchSupplierDetails = async (supplierId) => {
-    try {
-      const suppliersCollection = collection(db, "Suppliers"); // Ensure collection name is correct
+  // Fetch suppliers from Firestore
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const suppliersCollection = collection(db, "Suppliers");
       const supplierSnapshot = await getDocs(suppliersCollection);
+      const supplierList = supplierSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setSuppliers(supplierList); // Store suppliers in state
+    };
 
-      // Log the data of the first document for debugging
-      if (supplierSnapshot.docs.length > 0) {
-        console.log("First Supplier Data:", supplierSnapshot.docs[0].data());
-      }
-
-      // Map through the document snapshots to extract data
-      const suppliers = supplierSnapshot.docs.map((doc) => {
-        const data = doc.data(); // Get document data
-        console.log("Supplier Document ID:", doc.id); // Log the document ID
-        console.log("Supplier Data:", data); // Log the data for each document
-
-        return {
-          id: doc.id, // Use the document ID directly
-          ...data, // Spread the document data into an object
-        };
-      });
-
-      console.log("All Suppliers:", suppliers); // Log all suppliers
-
-      // Find the supplier with the given ID
-      const supplier = suppliers.find((supplier) => supplier.id === supplierId);
-
-      if (supplier) {
-        setSupplierDetails(supplier);
-        setSupplierDetailsVisible(true);
-      } else {
-        alert("Supplier not found.");
-      }
-    } catch (error) {
-      console.error("Error fetching suppliers:", error); // Log any errors
-    }
-  };
+    fetchSuppliers();
+  }, []);
 
   const handleCompare = () => {
     if (selectedProductIds.length === 2) {
@@ -78,7 +55,6 @@ const SupplierList = () => {
         selectedProductIds.includes(p.id)
       );
       console.log("Comparing products:", selectedProducts);
-      // You can open a modal or display results here
     } else {
       alert("Please select exactly 2 products to compare.");
     }
@@ -86,17 +62,14 @@ const SupplierList = () => {
 
   const toggleProductSelection = (productId) => {
     if (selectedProductIds.includes(productId)) {
-      // Deselect the product
       setSelectedProductIds(
         selectedProductIds.filter((id) => id !== productId)
       );
     } else if (selectedProductIds.length < 2) {
-      // Select the product if less than 2 are selected
       setSelectedProductIds([...selectedProductIds, productId]);
     }
   };
 
-  // Filter products based on search term
   const filteredProducts = products.filter((product) => {
     const searchLower = searchTerm.toLowerCase();
     return (
@@ -119,15 +92,8 @@ const SupplierList = () => {
     });
   };
 
-  // Function to toggle the visibility of the cart
   const toggleCart = () => {
     setCartVisible(!cartVisible);
-  };
-
-  // Function to close supplier details
-  const closeSupplierDetails = () => {
-    setSupplierDetailsVisible(false);
-    setSupplierDetails(null);
   };
 
   return (
@@ -162,7 +128,7 @@ const SupplierList = () => {
                     ? "border-gray-200 bg-green-100 scale-100"
                     : "border-gray-200"
                 }`}
-                onClick={() => toggleProductSelection(product.id)} // Select card on click
+                onClick={() => toggleProductSelection(product.id)}
               >
                 <div className="flex items-center">
                   <input
@@ -199,7 +165,16 @@ const SupplierList = () => {
                   className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition-colors duration-300"
                   onClick={(e) => {
                     e.stopPropagation();
-                    fetchSupplierDetails(product.supplier_id); // Fetch supplier details on click
+                    const supplier = suppliers.find(
+                      (sup) => sup.id === product.supplier_id
+                    );
+                    if (supplier) {
+                      navigate(`/supplier-details/${supplier.id}`, {
+                        state: { supplier }, // Pass supplier as state
+                      });
+                    } else {
+                      alert("Supplier not found.");
+                    }
                   }}
                 >
                   View Supplier Details
@@ -220,16 +195,7 @@ const SupplierList = () => {
         </span>
       </div>
 
-      {/* Conditionally render the Cart component */}
       {cartVisible && <Cart cart={cart} onClose={toggleCart} />}
-
-      {/* Conditionally render the SupplierDetails component */}
-      {supplierDetailsVisible && (
-        <SupplierDetails
-          supplier={supplierDetails}
-          onClose={closeSupplierDetails}
-        />
-      )}
     </div>
   );
 };
