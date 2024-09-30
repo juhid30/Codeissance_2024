@@ -9,6 +9,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import NGOEventListingPage from "./components/NGOEventListingPage";
 import 'remixicon/fonts/remixicon.css'
 import { Activity } from "./components/Activity";
+import Layout from "./components/Layout";
+import AIGrantLetter from './components/AIGrantLetter'
 
 
 function App() {
@@ -114,6 +116,8 @@ const dashboardProps = {
       <Routes>
         <Route path='/events' element={<NGOEventListingPage />}/>
         <Route path='/budget' element={<Activity {...dashboardProps} />}/>
+        <Route path='/layout' element={<Layout />}/>
+        <Route path='/grants' element={<AIGrantLetter />}/>
       </Routes>
     </>
   );
