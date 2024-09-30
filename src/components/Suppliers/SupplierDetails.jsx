@@ -1,6 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from 'react-router-dom';
+import { db } from '../../../firebase'; // Adjust the import path as needed
+import { collection, getDocs } from "firebase/firestore"; // Ensure you import necessary Firestore functions
 
-const SupplierDetails = ({ supplier }) => {
+const SupplierDetails = () => {
+  const { supplierId } = useParams(); // Get supplierId from URL parameters
+  const [suppliers, setSuppliers] = useState([]); // State to hold the list of suppliers
+  const [supplier, setSupplier] = useState(); // State to hold the specific supplier details
+
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      const suppliersCollection = collection(db, "Suppliers");
+      const supplierSnapshot = await getDocs(suppliersCollection);
+      const supplierList = supplierSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setSuppliers(supplierList); // Store suppliers in state
+
+      // Find the supplier whose ID matches the supplierId
+      const foundSupplier = supplierList.find(s => s.id === supplierId);
+      setSupplier(foundSupplier); // Set the specific supplier in state
+    };
+
+    fetchSuppliers();
+  }, [supplierId]); // Adding supplierId to the dependency array
+
+  if (!supplier) {
+    return <div>Loading...</div>; // Handle loading state
+  }
+
+  console.log(supplier);
+
   return (
     <div className="bg-white shadow-2xl rounded-xl w-full p-8 relative overflow-hidden">
       {/* Header */}
@@ -18,25 +49,18 @@ const SupplierDetails = ({ supplier }) => {
             {supplier.items.map((item, index) => (
               <div
                 key={index}
-                className="relative bg-cover bg-center w-34 rounded-xl shadow-lg h-36 flex items-end overflow-hidden" // Adjusted height to h-48
+                className="relative bg-cover bg-center w-34 rounded-xl shadow-lg h-36 flex items-end overflow-hidden"
                 style={{
                   backgroundImage: `url(${item.image})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }}
               >
-                {/* Overlay for the cost and item details */}
                 <div className="bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 rounded-b-xl w-full">
-                  {" "}
-                  {/* Adjusted padding */}
                   <h4 className="text-lg font-semibold text-white">
-                    {" "}
-                    {/* Adjusted font size */}
                     {item.name}
                   </h4>
                   <p className="text-md text-gray-300">
-                    {" "}
-                    {/* Adjusted font size */}
                     <strong>Cost:</strong> ${item.price}
                   </p>
                 </div>
@@ -84,7 +108,6 @@ const SupplierDetails = ({ supplier }) => {
             {supplier.contact.phone}
           </p>
 
-          {/* Business Hours */}
           <h3 className="text-2xl font-bold text-green-800 mb-4">
             Business Hours
           </h3>
@@ -100,7 +123,6 @@ const SupplierDetails = ({ supplier }) => {
             </li>
           </ul>
 
-          {/* Payment Methods */}
           <h3 className="text-2xl font-bold text-green-800 mb-4">
             Payment Methods
           </h3>
@@ -132,7 +154,6 @@ const SupplierDetails = ({ supplier }) => {
             </li>
           </ul>
 
-          {/* Social Media Links */}
           <h3 className="text-2xl font-bold text-green-800 mb-4">Follow Us</h3>
           <div className="flex space-x-4 text-green-600">
             <a
