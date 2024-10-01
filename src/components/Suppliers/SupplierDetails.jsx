@@ -56,16 +56,16 @@ const SupplierDetails = () => {
         <div className="flex justify-between items-center space-x-4 mb-8">
           <div className="flex items-center space-x-2 text-sm">
             <div className="bg-green-300 text-green-800 py-2 px-4 rounded-lg shadow">
-              Request Made
+              Quick Delivery
             </div>
             <div className="bg-yellow-300 text-yellow-800 py-2 px-4 rounded-lg shadow">
-              Inspector Assigned
+              Quality Checks
             </div>
             <div className="bg-orange-300 text-orange-800 py-2 px-4 rounded-lg shadow">
-              Vendor Work In Progress
+              Less Quantity
             </div>
             <div className="bg-red-300 text-red-800 py-2 px-4 rounded-lg shadow">
-              Final Inspection Pending
+              Less Number of Workers
             </div>
           </div>
         </div>

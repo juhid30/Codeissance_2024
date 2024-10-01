@@ -15,6 +15,7 @@ import SupplierList from "./components/Suppliers/Suppliers";
 import MatchMaking from "./components/MatchMaking";
 import SupplierDetails from "./components/Suppliers/SupplierDetails";
 import EventPage from "./components/EventDetails";
+import CommunityForum from "./components/CommunityForum";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -117,6 +118,7 @@ function App() {
 
         <Route path="/test" element={<Test />} />
         <Route path="/event-details" element={<EventPage />} />
+        <Route path="/community" element={<CommunityForum />} />
         <Route path="/newtest" element={<MatchMaking />} />
       </Routes>
     </>

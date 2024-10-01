@@ -5,6 +5,8 @@ import { db } from "../../../firebase";
 import { collection, getDocs } from "firebase/firestore";
 import Layout from '../Layout';
 import { motion } from "framer-motion";
+import axios from 'axios';
+
 
 const SupplierList = () => {
   const [selectedProductIds, setSelectedProductIds] = useState([]);
@@ -52,18 +54,53 @@ const SupplierList = () => {
     fetchSuppliers();
   }, []);
 
+
   const handleCompare = () => {
+    function convertArrayToJSON(arr) {
+      const result = {};
+      
+      arr.forEach((item, index) => {
+        const key = `prod${index + 1}`;
+        result[key] = item;
+      });
+      
+      return result;
+    }
+  
     if (selectedProductIds.length === 2) {
       const selectedProducts = products.filter((p) =>
         selectedProductIds.includes(p.id)
       );
-      setSelectedProduct(selectedProducts[Math.floor(Math.random() * 2)]);
-      setRandomText("This is a randomly generated comparison text.");
-      setModalVisible(true);
+  
+      console.log(selectedProducts);
+  
+      const jsonResult = convertArrayToJSON(selectedProducts);
+      const compareApiReq = JSON.stringify(jsonResult, null, 2);
+  
+      // Hit the API using Axios
+      axios.post('https://bnhjv034-5000.inc1.devtunnels.ms/compare', compareApiReq, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          console.log('API Response:', response.data);
+          const match = selectedProducts.find(product => 
+            product.name === response.data.selected_product.name && 
+            product.cost === response.data.selected_product.cost
+        );
+          setSelectedProduct(match)
+          setRandomText(response.data.summary);
+          setModalVisible(true);
+        })
+        .catch((error) => {
+          console.error('There was a problem with the fetch operation:', error);
+        });
     } else {
       alert("Please select exactly 2 products to compare.");
     }
   };
+  
 
   const toggleProductSelection = (productId) => {
     if (selectedProductIds.includes(productId)) {

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { getFirestore, collection, addDoc } from 'firebase/firestore';
 
 const Cart = ({ cart, onClose }) => {
   const [deliveryFee] = useState(16); // Fixed delivery fee
@@ -17,7 +18,56 @@ const Cart = ({ cart, onClose }) => {
     }));
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
+    const db = getFirestore(); // Initialize Firestore
+    const categories = ['food', 'bills', 'entertainment', 'misc'];
+    const expenseArray = cart.map(item => {
+      const amount = item.cost * (quantity[item.id] || 1);
+      const date = new Date().toLocaleDateString('en-GB', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+      let expenseIcon;
+      const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+  
+      // Determine icon based on randomly assigned type
+      switch (randomCategory) {
+        case 'food':
+          expenseIcon = "ri-restaurant-fill text-[20px]";
+          break;
+        case 'bills':
+          expenseIcon = "ri-bill-line text-[20px]";
+          break;
+        case 'entertainment':
+          expenseIcon = "ri-sofa-line text-[20px]";
+          break;
+        case 'misc':
+          expenseIcon = "ri-wallet-line text-[20px]";
+          break;
+        default:
+          expenseIcon = "";
+      }
+  
+      return {
+        amount,
+        date,
+        icon: expenseIcon,
+        name: item.name,
+        spent: true,
+        type: randomCategory, // Assigning random type
+      };
+    });
+
+    // Upload each expense to Firestore
+    try {
+      const expensesCollection = collection(db, "Expenses");
+      for (const expense of expenseArray) {
+        await addDoc(expensesCollection, expense);
+      }
+      console.log("Expenses uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading expenses: ", error);
+    }
+    
     alert("Payment processed successfully!");
     onClose();
   };
