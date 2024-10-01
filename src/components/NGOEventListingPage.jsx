@@ -12,6 +12,8 @@ import { addDoc, collection, getDocs } from "firebase/firestore";
   const volunteer = ['Jash Rashne' , 'Juhi Deore' , 'Zeeshan Syed Hyder' , ' Om Avhad']
 
 const NGOEventListingPage = () => {
+  const navigate = useNavigate(); 
+
 
  async function uploadCampaignOne(camp) {
     const campaignColection = collection(db, "Campaigns");
@@ -53,7 +55,6 @@ const NGOEventListingPage = () => {
 }
 
 
-  const navigate = useNavigate();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [viewDetails, setViewDetails] = useState(null); // State for storing the event to view details
@@ -881,8 +882,9 @@ useEffect(() => {
             <div>
               <button
                 className="px-4 py-2 mr-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                onClick={() => navigate(`/event-details/${viewDetails.id}`)}
               >
-                Get Resources
+                Analytics
               </button>
               <button
                 onClick={handleSaveChanges}

@@ -20,6 +20,7 @@ import TestMap from "./components/Maps/TestMap";
 import MyHeatmap from "./components/Maps/MyHeatmap";
 import NGOMaps from "./components/Maps/NGOMaps";
 import CommunityForum from "./components/CommunityForum";
+import Landing from "./components/Landing";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -127,9 +128,10 @@ function App() {
         <Route path="/grants" element={<AIGrantLetter />} />
         <Route path="/record-feedback" element={<FeedbackRecorder />} />
         <Route path="/test" element={<Test />} />
-        <Route path="/event-details" element={<EventPage />} />
+        <Route path="/event-details/:eventId" element={<EventPage />} />
         <Route path="/community" element={<CommunityForum />} />
         <Route path="/newtest" element={<MatchMaking />} />
+        <Route path="/landing" element={<Landing />} />
       </Routes>
     </>
   );

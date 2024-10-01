@@ -1,33 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Line, Doughnut } from 'react-chartjs-2';
 import Layout from './Layout';
+import { db } from '../../firebase'; // Adjust the path as necessary
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { useParams } from 'react-router-dom';
+
 
 const EventPage = () => {
+
+  const { eventId } = useParams();
+
+  const [data, setData] = useState(null);
   const [activeSection, setActiveSection] = useState('timeline');
 
-  const data = {
-    id: 7,
-    uuid: "b91a4125-7c41-46b4-90ff-7351f2354e93",
-    name: "Civic Engagement Workshop",
-    date: "2025-01-05",
-    time: {
-      start: "10:00",
-      end: "15:00",
-    },
-    location: {
-      address: "404 Civic St, Amravati, India",
-      city: "Amravati",
-      state: "Maharashtra",
-      country: "India",
-      latitude: 20.9333,
-      longitude: 77.7500,
-    },
-    image: "https://example.com/images/civic-engagement.jpg",
-    description: "Workshop to promote civic engagement among youth.",
-    organizer: "Civic Action Network",
-    contactEmail: "info@civicaction.org",
-  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "Campaigns"));
+        const campaignData = querySnapshot.docs.map(doc => ({ id: doc.data().id, ...doc.data() }));
+        const matchedData = campaignData.find(campaign => campaign.id == eventId);
+
+        if (matchedData) {
+          setData(matchedData);
+        } else {
+          console.log("No document with matching ID!");
+        }
+      } catch (error) {
+        console.error("Error fetching documents: ", error);
+      }
+    };
+
+    fetchData();
+  }, [eventId]);
+
+  if (!data) {
+    return <div>Loading...</div>; // Add a loading state
+  }
+
+console.log(data);
 
   const lineData = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
