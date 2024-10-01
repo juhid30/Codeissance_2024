@@ -9,8 +9,8 @@ import {
 
 const containerStyle = {
   position: "relative",
-  width: "400px",
-  height: "400px",
+  width: "100vw",
+  height: "100vh",
 };
 
 // Center of the map
@@ -28,18 +28,36 @@ const heatMapData = [
     name: "Mount Mary Church",
     literacyRate: "90%",
   },
-  { lat: 19.0547, lng: 72.8262, name: "Bandra Bandstand", literacyRate: "87%" },
   {
-    lat: 18.9219,
-    lng: 72.8347,
-    name: "Chhatrapati Shivaji Maharaj Vastu Sangrahalaya",
-    literacyRate: "88%",
+    lat: 19.0547,
+    lng: 72.8262,
+    name: "Bandra Bandstand",
+    literacyRate: "87%",
   },
   {
-    lat: 19.2206,
-    lng: 72.8725,
-    name: "Sanjay Gandhi National Park",
-    literacyRate: "82%",
+    lat: 19.0602,
+    lng: 72.8347,
+    name: "Bandra Talao",
+    literacyRate: "N/A",
+  },
+  {
+    lat: 19.0588,
+    lng: 72.8453,
+    name: "Bandra Sports Complex",
+    literacyRate: "N/A",
+  },
+  {
+    lat: 19.0522,
+    lng: 72.8365,
+    name: "D Y Patil College",
+    literacyRate: "N/A",
+  },
+
+  {
+    lat: 19.058,
+    lng: 72.8267,
+    name: "Bandra Fort",
+    literacyRate: "N/A",
   },
 ];
 
@@ -88,55 +106,51 @@ const MapTest = () => {
     <GoogleMap
       mapContainerStyle={containerStyle}
       center={center}
-      zoom={10}
+      zoom={14}
       onLoad={(map) => setMap(map)}
     >
-      <>
-        <HeatmapLayer
-          data={heatMapData.map((data) => {
-            const latLng = new window.google.maps.LatLng(data.lat, data.lng);
-            return latLng;
-          })}
-          options={{ radius: 100 }}
-        />
-        {/* Render markers and attach click event */}
-        {heatMapData.map((data) => (
-          <Marker
-            key={`${data.lat}-${data.lng}`}
-            position={{ lat: data.lat, lng: data.lng }}
-            onClick={(event) =>
-              handleMarkerClick(event, data.name, data.literacyRate)
-            }
+      {map && (
+        <>
+          <HeatmapLayer
+            data={heatMapData.map((data) => {
+              const latLng = new window.google.maps.LatLng(data.lat, data.lng);
+              return latLng;
+            })}
+            options={{ radius: 60 }}
           />
-        ))}
-        {/* Render InfoWindow when it's open */}
-        {infoWindow.isOpen && (
-          <InfoWindow
-            position={infoWindow.position}
-            onCloseClick={handleCloseClick}
-          >
-            <div
-              style={{
-                color: "#4CAF50",
-                fontWeight: "bold",
-                padding: "10px",
-                backgroundColor: "#e8f5e9",
-                borderRadius: "8px",
-              }}
+          {/* Render markers and attach click event */}
+          {/* {heatMapData.map((data) => (
+            <Marker
+              key={`${data.lat}-${data.lng}`}
+              position={{ lat: data.lat, lng: data.lng }}
+              onClick={(event) =>
+                handleMarkerClick(event, data.name, data.literacyRate)
+              }
+            />
+          ))} */}
+          {/* Render InfoWindow when it's open */}
+          {/* {hoveredLocation && (
+            <InfoWindow
+              position={hoveredLocation.position}
+              onCloseClick={handleCloseClick}
             >
-              <h3 style={{ margin: "0", color: "#4CAF50" }}>
-                {infoWindow.name}
-              </h3>
-              <p style={{ margin: "5px 0", fontSize: "14px" }}>
-                Literacy Rate:{" "}
-                <span style={{ color: "#333", fontWeight: "normal" }}>
-                  {infoWindow.literacyRate}
-                </span>
-              </p>
-            </div>
-          </InfoWindow>
-        )}
-      </>
+              <div
+                style={{
+                  color: "#4CAF50",
+                  fontWeight: "bold",
+                  padding: "10px",
+                  backgroundColor: "#e8f5e9",
+                  borderRadius: "8px",
+                }}
+              >
+                <h3 style={{ margin: "0", color: "#4CAF50" }}>
+                  {hoveredLocation.name}
+                </h3>
+              </div>
+            </InfoWindow>
+          )} */}
+        </>
+      )}
     </GoogleMap>
   ) : (
     <div>Loading Map...</div>

@@ -1,73 +1,122 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import {
   GoogleMap,
-  LoadScript,
-  StreetViewPanorama,
   HeatmapLayer,
+  Marker,
+  InfoWindow,
+  useJsApiLoader,
 } from "@react-google-maps/api";
 
+const containerStyle = {
+  position: "relative",
+  width: "100vw",
+  height: "100vh",
+};
+
+// Center of the map
+const center = {
+  lat: 19.0596,
+  lng: 72.8295,
+};
+
+// Heatmap data with names and literacy rates
+const heatMapData = [
+  { lat: 19.0525, lng: 72.8338, name: "Bandra Fort", literacyRate: "85%" },
+  {
+    lat: 19.0588,
+    lng: 72.8346,
+    name: "Mount Mary Church",
+    literacyRate: "90%",
+  },
+  { lat: 19.0547, lng: 72.8262, name: "Bandra Bandstand", literacyRate: "87%" },
+  { lat: 19.0602, lng: 72.8347, name: "Bandra Talao", literacyRate: "N/A" },
+  {
+    lat: 19.0588,
+    lng: 72.8453,
+    name: "Bandra Sports Complex",
+    literacyRate: "N/A",
+  },
+  {
+    lat: 19.0522,
+    lng: 72.8365,
+    name: "D Y Patil College",
+    literacyRate: "N/A",
+  },
+];
+
 const MyHeatmap = () => {
-  const mapRef = useRef();
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyAqo1VPkhZxAQXaIgXuNDSMDY1pgUicgkA",
+    libraries: ["visualization"],
+  });
 
-  const heatmapData = [
-    { location: new window.google.maps.LatLng(37.782, -122.447), weight: 1 },
-    { location: new window.google.maps.LatLng(37.782, -122.445), weight: 2 },
-    { location: new window.google.maps.LatLng(37.782, -122.443), weight: 3 },
-    { location: new window.google.maps.LatLng(37.782, -122.441), weight: 4 },
-    // Add more data points as needed
-  ];
+  const [map, setMap] = React.useState(null);
+  const [hoveredMarker, setHoveredMarker] = React.useState(null);
 
-  const mapContainerStyle = {
-    height: "100vh",
-    width: "100%",
-  };
-
-  const options = {
-    streetView: {
-      position: { lat: 37.782, lng: -122.447 },
-      pov: { heading: 165, pitch: 0 },
-      visible: true,
-    },
-    heatmap: {
-      radius: 20,
-      opacity: 0.6,
-    },
-  };
-
-  useEffect(() => {
-    if (mapRef.current) {
-      const heatmapLayer = new window.google.maps.visualization.HeatmapLayer({
-        data: heatmapData,
-        map: mapRef.current,
-      });
-      heatmapLayer.setMap(mapRef.current);
+  // Log when the map is loaded
+  React.useEffect(() => {
+    if (map) {
+      console.log("Map Loaded:", map);
     }
-  }, [mapRef]);
+  }, [map]);
 
-  return (
-    <LoadScript
-      googleMapsApiKey="AIzaSyAqo1VPkhZxAQXaIgXuNDSMDY1pgUicgkA"
-      libraries={["visualization"]}
+  return isLoaded ? (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={center}
+      zoom={14}
+      onLoad={(map) => setMap(map)}
     >
-      <GoogleMap
-        ref={mapRef}
-        mapContainerStyle={mapContainerStyle}
-        zoom={15}
-        center={{ lat: 37.782, lng: -122.447 }}
-      >
-        <StreetViewPanorama
-          position={{ lat: 37.782, lng: -122.447 }}
-          visible={true}
-        />
-        <HeatmapLayer
-          data={heatmapData}
-          options={{
-            radius: 20,
-            opacity: 0.6,
-          }}
-        />
-      </GoogleMap>
-    </LoadScript>
+      {/* {map && ( */}
+      <>
+        {/* Render markers with hover event */}
+        {heatMapData.map((data) => (
+          <Marker
+            key={`${data.lat}-${data.lng}`}
+            position={{ lat: data.lat, lng: data.lng }}
+            onClick={() => setHoveredMarker(data)} // Show info on hover
+            // onMouseOut={() => setHoveredMarker(null)} // Hide info on mouse out
+          />
+        ))}
+        {/* Render InfoWindow when a marker is hovered */}
+        {hoveredMarker && (
+          <InfoWindow
+            position={{
+              lat: hoveredMarker.lat,
+              lng: hoveredMarker.lng,
+            }}
+            onCloseClick={() => setHoveredMarker(null)}
+            options={{ pixelOffset: new window.google.maps.Size(0, -40) }} // Adjusts the position of the InfoWindow
+          >
+            <div
+              style={{
+                width: "250px", // Set desired width
+                height: "auto", // Adjust height automatically based on content
+                color: "#4CAF50",
+                fontWeight: "bold",
+                padding: "10px",
+                backgroundColor: "#e8f5e9",
+                borderRadius: "8px",
+                boxShadow: "0 2px 5px rgba(0,0,0,0.3)", // Optional: Adds shadow for better visibility
+              }}
+            >
+              <h3 style={{ margin: "0", color: "#4CAF50" }}>
+                {hoveredMarker.name}
+              </h3>
+              <p style={{ margin: "5px 0", fontSize: "14px" }}>
+                NGO Work Map: <br />
+                <span style={{ color: "#333", fontWeight: "normal" }}>
+                  Work areas highlighted on the map
+                </span>
+              </p>
+            </div>
+          </InfoWindow>
+        )}
+      </>
+      {/* )} */}
+    </GoogleMap>
+  ) : (
+    <div>Loading Map...</div>
   );
 };
 

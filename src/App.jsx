@@ -19,6 +19,7 @@ import FeedbackRecorder from "./components/FeedbackRecorder";
 import TestMap from "./components/Maps/TestMap";
 import MyHeatmap from "./components/Maps/MyHeatmap";
 import NGOMaps from "./components/Maps/NGOMaps";
+import LandingPage from "./components/LandingPage";
 
 function App() {
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
@@ -112,16 +113,19 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/supplier-list" element={<SupplierList />} />
         <Route
           path="/supplier-details/:supplierId"
           element={<SupplierDetails />}
         />
-        <Route path="/test-map" element={<TestMap />} />
+        {/* <Route path="/test-map" element={<TestMap />} /> */}
+        <Route path="/literacy-map" element={<TestMap />} />
+        <Route path="/ngo-work-map" element={<MyHeatmap />} />
         <Route path="/events" element={<NGOEventListingPage />} />
         <Route path="/budget" element={<Activity {...dashboardProps} />} />
         <Route path="/layout" element={<Layout />} />
-        <Route path="/heatmap" element={<MapTest />} />
+        <Route path="/volunteer-heatmap" element={<MapTest />} />
         <Route path="/ngomaps" element={<NGOMaps />} />
         <Route path="/grants" element={<AIGrantLetter />} />
         <Route path="/record-feedback" element={<FeedbackRecorder />} />
