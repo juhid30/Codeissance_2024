@@ -2,17 +2,17 @@ import React from "react";
 import { motion } from "framer-motion";
 // import { useHistory } from "react-router-dom";
 import Layout from "./Layout";
-
+import logo from "../assets/logo.png";
 function LandingPage() {
   //   const history = useHistory(); // useHistory for navigation
 
   return (
     <Layout>
-      <div className="bg-gradient-to-r from-teal-300 via-purple-300 to-pink-300 min-h-[90vh] flex items-center justify-center">
+      <div className="bg-gradient-to-r bg-green-50 min-h-[90vh] flex items-center justify-center">
         <div className="flex flex-row max-w-6xl mx-auto w-full p-6">
           {/* Hero Section */}
           <motion.div
-            className="flex flex-col justify-center w-1/2 text-center text-white p-8"
+            className="flex flex-col justify-center w-1/2 text-center text-green-900 p-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
@@ -62,7 +62,7 @@ function LandingPage() {
             transition={{ duration: 1, delay: 0.5 }}
           >
             <img
-              src="your-image-url-here.jpg" // Replace with the actual image URL
+              src={logo} // Replace with the actual image URL
               alt="Udaan Initiative"
               className="rounded-lg shadow-lg max-w-full h-auto"
             />
