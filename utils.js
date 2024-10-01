@@ -3,6 +3,9 @@
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { products } from "./data";
 import { suppliers } from "./data";
+import { eventDetails } from "./public/constants/eventDetails";
+
+
 // Initialize Firestore
 const db = getFirestore();
 // utils.js
@@ -87,6 +90,20 @@ export async function uploadSuppliers() {
     try {
       // Add each supplier as a new document
       const docRef = await addDoc(suppliersCollection, supplier);
+      console.log("Supplier document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding supplier document: ", e);
+    }
+  }
+}
+
+export async function uploadCampaigns() {
+  const campaignColection = collection(db, "Campaigns");
+
+  for (const camp of eventDetails) {
+    try {
+      // Add each supplier as a new document
+      const docRef = await addDoc(campaignColection, camp);
       console.log("Supplier document written with ID: ", docRef.id);
     } catch (e) {
       console.error("Error adding supplier document: ", e);

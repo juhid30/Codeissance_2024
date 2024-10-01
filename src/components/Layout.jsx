@@ -1,5 +1,7 @@
 import React, { useState } from 'react'; // Import React and useState for state management
 import { Link, NavLink } from 'react-router-dom'; // Import Link and NavLink for routing
+import TransitionEffect from './TransitionEffect';
+import logo from '../../public/logo_udaan.png'
 
 const Layout = ({children}) => {
     const [navbarOpen, setNavbarOpen] = useState(true);
@@ -7,11 +9,12 @@ const Layout = ({children}) => {
   return (
     <div className='h-screen w-screen'>
         <header className="bg-white text-black h-[10vh]">
+            
         <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 md:px-20">
         <div className="flex lg:flex-1">
             <Link to={"/"} className="-m-1.5 p-1.5">
             <span className="sr-only">Your Company</span>
-            <img className="h-8 w-auto" src="https://www.designmantic.com/logo-images/16241.png?company=Company%20Name&keyword=ngo&slogan=&verify=1" alt="" />
+            <img className="h-8 w-auto" src={logo} alt="" />
             </Link>
         </div>
 
@@ -60,6 +63,13 @@ const Layout = ({children}) => {
             className="text-sm font-semibold leading-6 text-gray-900"
             >
             Grants
+            </NavLink>
+            <NavLink
+            end
+            to={"/supplier-list"}
+            className="text-sm font-semibold leading-6 text-gray-900"
+            >
+            Suppliers
             </NavLink>
         </div>
         </nav>
@@ -121,10 +131,20 @@ const Layout = ({children}) => {
                 >
                     Grants
                 </NavLink>
+                <NavLink
+                    end
+                    to="/supplier-list"
+                    className="-mx-3 block rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-500"
+                >
+                    Suppliers
+                </NavLink>
+
+                
                 </div>
             </div>
             </div>
         </div>
+
         </div>
     </header>
 
