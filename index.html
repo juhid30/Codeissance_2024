@@ -1,13 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <!-- <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/vmapbox-gl@3.7.0/mapbox-gl.css"
+      rel="stylesheet"
+    /> -->
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <link
+      href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite + React</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="map" style="width: 400px; height: 300px"></div>
+      <script>
+        var map = new maplibregl.Map({
+          container: "map",
+          style: "https://demotiles.maplibre.org/style.json", // stylesheet location
+          center: [-74.5, 40], // starting position [lng, lat]
+          zoom: 9, // starting zoom
+        });
+      </script>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
