@@ -15,7 +15,6 @@
     "@react-pdf/renderer": "^4.0.0",
     "axios": "^1.7.7",
     "@types/mapbox-gl": "^3.4.0",
-    "axios": "^1.7.7",
     "firebase": "^10.13.2",
     "framer-motion": "^11.9.0",
     "html2canvas": "^1.4.1",
