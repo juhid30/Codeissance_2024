@@ -10,15 +10,30 @@ import {
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Layout from "./Layout";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement } from "chart.js";
+import {
+  Chart as ChartJS,
+  LineElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+} from "chart.js";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement);
 
 const LineChart = () => {
   const months = [
-    "January", "February", "March", "April", "May",
-    "June", "July", "August", "September", "October",
-    "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
   const data = {
@@ -26,14 +41,14 @@ const LineChart = () => {
     datasets: [
       {
         label: "2010-2020",
-        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 1000)),
+        data: [385, 722, 510, 924, 643, 308, 456, 299, 785, 827, 642, 711],
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         fill: true,
       },
       {
         label: "2020-onwards",
-        data: Array.from({ length: 12 }, () => Math.floor(Math.random() * 1000)),
+        data: [654, 275, 823, 472, 916, 332, 567, 798, 411, 289, 610, 741],
         borderColor: "rgba(255, 99, 132, 1)",
         backgroundColor: "rgba(255, 99, 132, 0.2)",
         fill: true,
@@ -99,14 +114,24 @@ const newsData = [
 const NewsComponent = () => (
   <div className="space-y-4">
     {newsData.map((news, index) => (
-      <div key={index} className="flex items-center p-4 bg-white rounded-lg shadow-md">
-        <img src={news.imageUrl} alt={news.title} className="w-20 h-20 rounded-lg mr-4 object-cover" />
+      <div
+        key={index}
+        className="flex items-center p-4 bg-white rounded-lg shadow-md"
+      >
+        <img
+          src={news.imageUrl}
+          alt={news.title}
+          className="w-20 h-20 rounded-lg mr-4 object-cover"
+        />
         <div className="flex-1">
           <h3 className="text-md font-bold">{news.title}</h3>
           <div className="text-sm text-gray-500">
-            <span>{news.viewers} viewers</span> &middot; <span>{news.reads} reads</span>
+            <span>{news.viewers} viewers</span> &middot;{" "}
+            <span>{news.reads} reads</span>
           </div>
-          <a href="#" className="text-blue-500 text-sm">See details</a>
+          <a href="#" className="text-blue-500 text-sm">
+            See details
+          </a>
         </div>
       </div>
     ))}
@@ -116,8 +141,6 @@ const NewsComponent = () => (
 const PermissionLetterGenerator = () => {
   const [letterContent, setLetterContent] = useState({
     ngoName: "",
-    body: "",
-    date: new Date().toLocaleDateString(),
     recipient: "",
     governmentBody: "",
     recipientDesignation: "",
@@ -157,11 +180,26 @@ const PermissionLetterGenerator = () => {
   const handleGenerateLetter = async () => {
     setLoading(true);
     try {
-      const API_KEY = "YOUR_API_KEY"; // Use a safe method to manage API keys
+      const API_KEY = "AIzaSyCVOV_MuOdKNFYVTQOzjtjpSDqL73FspW8"; // Use a safe method to manage API keys
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-      const prompt = `Create a formal letter for an NGO requesting permission from the government...`;
+      const prompt = `Create a formal letter for an NGO requesting permission from the government.
+      \n Use only the details which I give you.\n
+          ngoName: "",\n
+    recipient: "",\n
+    governmentBody: "",\n
+    recipientDesignation: "",\n
+    projectName: "",\n
+    projectDescription: "",\n
+    requirement1: "",\n
+    requirement2: "",\n
+    requirement3: "",\n
+    submissionDeadline: "",\n
+    supportingDocuments: "",\n
+    signatoryName: "",\n
+    phoneNumber: "",\n
+    emailAddress: "",\n\n Using these variables that I have provided, generate just a body of the letter`;
 
       const result = await model.generateContent(prompt);
       const body = preprocessLetterBody(result.response.text());
@@ -209,9 +247,12 @@ const PermissionLetterGenerator = () => {
           </h1>
         </div>
 
-        <div className="flex flex-col lg:flex-row h-full overflow-auto">
-          <div className="flex-1 lg:mr-4 overflow-auto py-5">
-            <form onSubmit={(e) => e.preventDefault()} className="mb-4 space-y-4">
+        <div className="flex flex-col lg:flex-row h-full overflow-auto ">
+          <div className="flex-1 lg:mr-4 overflow-auto py-5 invisible-scrollbar">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="mb-4 space-y-4"
+            >
               {/* Contact Details Section */}
               <div className="flex flex-col space-y-2">
                 <div className="flex space-x-4">
@@ -262,10 +303,6 @@ const PermissionLetterGenerator = () => {
                     />
                   </label>
                 </div>
-              </div>
-
-              {/* Request Details Section */}
-              <div className="flex flex-col space-y-2">
                 <div className="flex space-x-4">
                   <label className="block w-full">
                     Project Name:
@@ -279,27 +316,16 @@ const PermissionLetterGenerator = () => {
                     />
                   </label>
                   <label className="block w-full">
-                    Signatory Name:
-                    <input
-                      type="text"
-                      name="signatoryName"
-                      value={letterContent.signatoryName}
+                    Project Description:
+                    <textarea
+                      name="projectDescription"
+                      value={letterContent.projectDescription}
                       onChange={handleChange}
                       required
                       className="mt-1 p-2 border border-green-300 rounded w-full"
                     />
                   </label>
                 </div>
-                <label className="block">
-                  Project Description:
-                  <textarea
-                    name="projectDescription"
-                    value={letterContent.projectDescription}
-                    onChange={handleChange}
-                    required
-                    className="mt-1 p-2 border border-green-300 rounded w-full"
-                  />
-                </label>
                 <div className="flex space-x-4">
                   <label className="block w-full">
                     Requirement 1:
@@ -319,6 +345,7 @@ const PermissionLetterGenerator = () => {
                       name="requirement2"
                       value={letterContent.requirement2}
                       onChange={handleChange}
+                      required
                       className="mt-1 p-2 border border-green-300 rounded w-full"
                     />
                   </label>
@@ -329,14 +356,11 @@ const PermissionLetterGenerator = () => {
                       name="requirement3"
                       value={letterContent.requirement3}
                       onChange={handleChange}
+                      required
                       className="mt-1 p-2 border border-green-300 rounded w-full"
                     />
                   </label>
                 </div>
-              </div>
-
-              {/* Additional Information */}
-              <div className="flex flex-col space-y-2">
                 <div className="flex space-x-4">
                   <label className="block w-full">
                     Submission Deadline:
@@ -345,21 +369,33 @@ const PermissionLetterGenerator = () => {
                       name="submissionDeadline"
                       value={letterContent.submissionDeadline}
                       onChange={handleChange}
+                      required
                       className="mt-1 p-2 border border-green-300 rounded w-full"
                     />
                   </label>
                   <label className="block w-full">
                     Supporting Documents:
-                    <input
-                      type="text"
+                    <textarea
                       name="supportingDocuments"
                       value={letterContent.supportingDocuments}
                       onChange={handleChange}
+                      required
                       className="mt-1 p-2 border border-green-300 rounded w-full"
                     />
                   </label>
                 </div>
                 <div className="flex space-x-4">
+                  <label className="block w-full">
+                    Signatory Name:
+                    <input
+                      type="text"
+                      name="signatoryName"
+                      value={letterContent.signatoryName}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 p-2 border border-green-300 rounded w-full"
+                    />
+                  </label>
                   <label className="block w-full">
                     Phone Number:
                     <input
@@ -385,49 +421,38 @@ const PermissionLetterGenerator = () => {
                 </div>
               </div>
 
-              {/* Generate/Download Button */}
-              {isDownloaded ? (
-                <div className="flex space-x-4">
-                  <PDFDownloadLink document={<MyDocument />} fileName="permission_letter.pdf">
-                    {({ loading }) => (
-                      <button
-                        className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition duration-300 w-full"
-                        disabled={loading}
-                      >
-                        {loading ? "Loading document..." : "Download Letter"}
-                      </button>
-                    )}
-                  </PDFDownloadLink>
-                  <button
-                    onClick={() => setIsDownloaded(false)}
-                    className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition duration-300 w-full"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
+              <div className="flex justify-between items-center">
                 <button
                   type="button"
-                  onClick={handleGenerateLetter}
-                  className="bg-green-500 text-white py-2 px-4 rounded w-full"
+                  onClick={() => handleGenerateLetter()}
                   disabled={loading}
+                  className={`${
+                    loading ? "opacity-50 cursor-not-allowed" : "bg-green-600"
+                  } text-white font-bold py-2 px-4 rounded`}
                 >
                   {loading ? "Generating..." : "Generate Letter"}
                 </button>
-              )}
+              </div>
             </form>
+
+            {isDownloaded && (
+              <PDFDownloadLink
+                document={<MyDocument />}
+                fileName="permission_letter.pdf"
+                className="inline-block mt-4 bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              >
+                {({ loading }) =>
+                  loading ? "Preparing document..." : "Download Letter"
+                }
+              </PDFDownloadLink>
+            )}
           </div>
 
-          {/* Right Hand Side: Charts, Grants, and News */}
-          <div className="flex-1 lg:ml-4 overflow-auto">
-            <div className="bg-green-50 p-4 rounded-lg mb-4">
-              <h2 className="text-lg font-bold text-green-800">Legal Grants Overview</h2>
-              <LineChart />
-            </div>
-            <div className="bg-green-100 p-4 rounded-lg">
-              <h2 className="text-lg font-bold text-green-800">Latest News</h2>
-              <NewsComponent />
-            </div>
+          <div className="w-full lg:w-1/2 lg:ml-4 overflow-auto py-5">
+            <h2 className="text-xl font-bold">Chart Data</h2>
+            <LineChart />
+            <h2 className="text-xl font-bold mt-6">Latest News</h2>
+            <NewsComponent />
           </div>
         </div>
       </div>

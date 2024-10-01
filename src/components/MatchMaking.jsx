@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getTop5CampaignsCustom } from "../../utils";
 
 const MatchMaking = () => {
-  // State to store the top 5 recommended events
   const [topEvents, setTopEvents] = useState([]);
 
   useEffect(() => {
-    // Sample test data for user interests
     const testUserInterests = ["Health", "Volunteer", "Charity"];
 
-    // Sample campaign events data
     const testCampaignEvents = [
       {
         name: "Health Awareness Campaign",
@@ -61,13 +58,11 @@ const MatchMaking = () => {
       },
     ];
 
-    // Get the top 5 recommended events using the custom algorithm
     const top5Events = getTop5CampaignsCustom(
       testUserInterests,
       testCampaignEvents
     );
 
-    // Update the state with the top 5 events
     setTopEvents(top5Events);
   }, []);
 

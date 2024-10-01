@@ -131,6 +131,6 @@ const TestMap = () => {
   ) : (
     <div>Loading Map...</div>
   );
-};  
+};
 
 export default TestMap;

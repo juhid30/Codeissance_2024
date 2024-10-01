@@ -41,7 +41,7 @@ function LandingPage() {
                 whileTap={{ scale: 0.9 }}
                 // onClick={() => history.push("/courses")}
               >
-                Go To Course
+                Contact Us
               </motion.button>
               <motion.button
                 className="bg-green-400 text-green-900 py-4 px-8 rounded-lg shadow-md hover:bg-green-500 transition-transform transform hover:scale-105"
@@ -49,7 +49,7 @@ function LandingPage() {
                 whileTap={{ scale: 0.9 }}
                 // onClick={() => history.push("/how-it-works")}
               >
-                See how it works
+                About Us
               </motion.button>
             </div>
           </motion.div>
